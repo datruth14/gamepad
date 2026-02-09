@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { connectToDatabase } from '@/lib/mongodb';
+import dbConnect from '@/lib/db';
 import GameGroup from '@/lib/models/GameGroup';
 import Wallet from '@/lib/models/Wallet';
 import mongoose from 'mongoose';
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Game ID required' }, { status: 400 });
         }
 
-        await connectToDatabase();
+        await dbConnect();
 
         const userId = session.user.id;
         console.log('=== Leave Game Request ===');
