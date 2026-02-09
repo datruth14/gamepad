@@ -72,24 +72,15 @@ export async function initializeDeposit(
     metadata?: Record<string, unknown>,
     baseUrl?: string
 ): Promise<PaystackInitResponse> {
-    let callbackUrl = process.env.PAYSTACK_CALLBACK_URL;
+    // Determine callback URL - prioritize environment variables
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || baseUrl || 'http://localhost:3000';
 
-    if (!callbackUrl) {
-        callbackUrl = baseUrl
-            ? `${baseUrl}/api/wallet/verify`
-            : `${process.env.NEXTAUTH_URL}/api/wallet/verify`;
-    } else if (!callbackUrl.startsWith('http')) {
-        const base = baseUrl || process.env.NEXTAUTH_URL || 'http://localhost:3000';
-        try {
-            callbackUrl = new URL(callbackUrl, base).toString();
-        } catch (e) {
-            console.error('Error constructing callback URL:', e);
-            // Fallback to default if construction fails
-            callbackUrl = baseUrl
-                ? `${baseUrl}/api/wallet/verify`
-                : `${process.env.NEXTAUTH_URL}/api/wallet/verify`;
-        }
-    }
+    // Ensure no trailing slash
+    const cleanAppUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
+
+    const callbackUrl = `${cleanAppUrl}/api/wallet/verify`;
+
+    console.log('Initializing Paystack deposit with callback:', callbackUrl);
 
     const response = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {
         method: 'POST',
