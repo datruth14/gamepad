@@ -85,6 +85,19 @@ export async function initializeDeposit(
         appUrl = process.env.NEXTAUTH_URL;
     }
 
+    // Safety check: specific to production environment
+    // If we found a localhost URL but we are in production, ignore it
+    // This handles cases where NEXTAUTH_URL is mistakenly set to localhost in production
+    if (process.env.NODE_ENV === 'production' && appUrl && appUrl.includes('localhost')) {
+        console.warn('Detected localhost URL in production, ignoring:', appUrl);
+        appUrl = undefined;
+
+        // Try VERCEL_URL again if we just invalidated appUrl
+        if (process.env.VERCEL_URL) {
+            appUrl = `https://${process.env.VERCEL_URL}`;
+        }
+    }
+
     // Fallback to request origin
     if (!appUrl) {
         appUrl = baseUrl;
