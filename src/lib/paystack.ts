@@ -72,40 +72,12 @@ export async function initializeDeposit(
     metadata?: Record<string, unknown>,
     baseUrl?: string
 ): Promise<PaystackInitResponse> {
-    // Determine callback URL - prioritize environment variables
-    let appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    // Determine callback URL
+    // Strictly prioritize USER CONFIG > HARDCODED PROD URL
+    // We ignore VERCEL_URL by default to avoid protected preview URLs which break external callbacks
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gamepad-beta.vercel.app';
 
-    // Explicit override requested by user
-    const PRODUCTION_URL = 'https://gamepad-beta.vercel.app';
-
-    // Use VERCEL_URL if available (automatically set by Vercel)
-    if (!appUrl && process.env.VERCEL_URL) {
-        appUrl = `https://${process.env.VERCEL_URL}`;
-    }
-
-    // Fallback to NEXTAUTH_URL (might be undefined on Vercel if inferred)
-    if (!appUrl) {
-        appUrl = process.env.NEXTAUTH_URL;
-    }
-
-    // Safety check: specific to production environment
-    if (process.env.NODE_ENV === 'production') {
-        // If we found a localhost URL, or no URL at all, force the production URL
-        if (!appUrl || appUrl.includes('localhost')) {
-            console.warn('Using explicit production URL instead of:', appUrl);
-            appUrl = PRODUCTION_URL;
-        }
-    }
-
-    // Fallback to request origin
-    if (!appUrl) {
-        appUrl = baseUrl;
-    }
-
-    // Final fallback
-    if (!appUrl) {
-        appUrl = 'http://localhost:3000';
-    }
+    console.log('Using Paystack callback base URL:', appUrl);
 
     // Ensure no trailing slash
     const cleanAppUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;

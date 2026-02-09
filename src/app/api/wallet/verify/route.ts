@@ -7,40 +7,12 @@ export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const reference = searchParams.get('reference');
-        // Determine base URL for redirect - prioritize environment variables
-        let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+        // Determine base URL for redirect
+        // Strictly prioritize USER CONFIG > HARDCODED PROD URL
+        // We ignore VERCEL_URL by default to avoid protected preview URLs which break external callbacks
+        let baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gamepad-beta.vercel.app';
 
-        // Explicit override requested by user
-        const PRODUCTION_URL = 'https://gamepad-beta.vercel.app';
-
-        // Use VERCEL_URL if available (automatically set by Vercel)
-        if (!baseUrl && process.env.VERCEL_URL) {
-            baseUrl = `https://${process.env.VERCEL_URL}`;
-        }
-
-        // Fallback to NEXTAUTH_URL (might be undefined on Vercel if inferred)
-        if (!baseUrl) {
-            baseUrl = process.env.NEXTAUTH_URL;
-        }
-
-        // Safety check: specific to production environment
-        if (process.env.NODE_ENV === 'production') {
-            // If we found a localhost URL, or no URL at all, force the production URL
-            if (!baseUrl || baseUrl.includes('localhost')) {
-                console.warn('Using explicit production URL instead of:', baseUrl);
-                baseUrl = PRODUCTION_URL;
-            }
-        }
-
-        // Fallback to request origin
-        if (!baseUrl) {
-            baseUrl = request.nextUrl.origin;
-        }
-
-        // Final fallback
-        if (!baseUrl) {
-            baseUrl = 'http://localhost:3000';
-        }
+        console.log('Using Verify redirect base URL:', baseUrl);
 
         // Ensure no trailing slash
         if (baseUrl.endsWith('/')) {
