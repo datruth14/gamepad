@@ -7,9 +7,45 @@ export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const reference = searchParams.get('reference');
-        // Use NEXTAUTH_URL as the safe base for redirects to avoid localhost https issues
-        // Fallback to request origin if NEXTAUTH_URL is somehow missing
-        const baseUrl = process.env.NEXTAUTH_URL || request.nextUrl.origin;
+        // Determine base URL for redirect - prioritize environment variables
+        let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+        // Use VERCEL_URL if available (automatically set by Vercel)
+        if (!baseUrl && process.env.VERCEL_URL) {
+            baseUrl = `https://${process.env.VERCEL_URL}`;
+        }
+
+        // Fallback to NEXTAUTH_URL (might be undefined on Vercel if inferred)
+        if (!baseUrl) {
+            baseUrl = process.env.NEXTAUTH_URL;
+        }
+
+        // Safety check: specific to production environment
+        // If we found a localhost URL but we are in production, ignore it
+        if (process.env.NODE_ENV === 'production' && baseUrl && baseUrl.includes('localhost')) {
+            console.warn('Detected localhost URL in production, ignoring for redirect:', baseUrl);
+            baseUrl = undefined;
+
+            // Try VERCEL_URL again if we just invalidated baseUrl
+            if (process.env.VERCEL_URL) {
+                baseUrl = `https://${process.env.VERCEL_URL}`;
+            }
+        }
+
+        // Fallback to request origin
+        if (!baseUrl) {
+            baseUrl = request.nextUrl.origin;
+        }
+
+        // Final fallback
+        if (!baseUrl) {
+            baseUrl = 'http://localhost:3000';
+        }
+
+        // Ensure no trailing slash
+        if (baseUrl.endsWith('/')) {
+            baseUrl = baseUrl.slice(0, -1);
+        }
 
         console.log('=== Payment Verification Started ===');
         console.log('Reference:', reference);
@@ -129,8 +165,9 @@ export async function GET(request: NextRequest) {
         );
     } catch (error) {
         console.error('Verify deposit error:', error);
-        const baseUrl = process.env.NEXTAUTH_URL || request.nextUrl.origin;
-        return NextResponse.redirect(new URL('/dashboard/wallet?error=verification_failed', baseUrl));
+        // For error case, just use request origin or simple fallback since we can't do much else easily without duplicating logic
+        const errorBaseUrl = request.nextUrl.origin || 'http://localhost:3000';
+        return NextResponse.redirect(new URL('/dashboard/wallet?error=verification_failed', errorBaseUrl));
     }
 }
 
