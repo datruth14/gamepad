@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --primary: #0a0a0a;
+  --gold: #FFD700;
+  --gold-dark: #D4B300;
+  --success: #22c55e;
+  --danger: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #ffffff;
+}
+
+@layer components {
+  .btn {
+    @apply px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-gold to-amber-500 text-primary-900 hover:shadow-lg hover:shadow-gold/25 hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply bg-primary-700 text-white hover:bg-primary-600 border border-primary-600;
+  }
+
+  .btn-danger {
+    @apply bg-danger text-white hover:bg-red-600;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-white hover:bg-primary-800;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 bg-primary-800 border border-primary-600 rounded-lg text-white placeholder-primary-400 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-all duration-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-primary-300 mb-2;
+  }
+
+  .card {
+    @apply bg-primary-800/50 backdrop-blur-sm border border-primary-700 rounded-xl p-6;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:border-gold/50 hover:shadow-lg hover:shadow-gold/10;
+  }
+
+  .gold-glow {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3),
+      0 0 40px rgba(255, 215, 0, 0.2),
+      0 0 60px rgba(255, 215, 0, 0.1);
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-gold to-amber-400 bg-clip-text text-transparent;
+  }
+}
+
+/* Spinning Wheel Animation */
+@keyframes wheel-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(var(--spin-degrees, 1800deg));
+  }
+}
+
+.wheel-spinning {
+  animation: wheel-spin 5s cubic-bezier(0.17, 0.67, 0.12, 0.99) forwards;
+}
+
+/* Countdown pulse */
+@keyframes countdown-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.countdown-active {
+  animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+/* Winner celebration */
+@keyframes celebrate {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  25% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+
+  50% {
+    transform: scale(1.2) rotate(5deg);
+  }
+
+  75% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.winner-celebration {
+  animation: celebrate 0.5s ease-in-out 3;
+}
+
+/* Confetti effect for winner */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  animation: confetti-fall 3s linear forwards;
+}
+
+/* Loading spinner animation */
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: spinner 1s linear infinite;
+}
+
+/* Full screen centered loading container */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0a0a0a;
+  z-index: 50;
+}
