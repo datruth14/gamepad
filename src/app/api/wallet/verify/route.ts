@@ -10,6 +10,9 @@ export async function GET(request: NextRequest) {
         // Determine base URL for redirect - prioritize environment variables
         let baseUrl = process.env.NEXT_PUBLIC_APP_URL;
 
+        // Explicit override requested by user
+        const PRODUCTION_URL = 'https://gamepad-beta.vercel.app';
+
         // Use VERCEL_URL if available (automatically set by Vercel)
         if (!baseUrl && process.env.VERCEL_URL) {
             baseUrl = `https://${process.env.VERCEL_URL}`;
@@ -21,14 +24,11 @@ export async function GET(request: NextRequest) {
         }
 
         // Safety check: specific to production environment
-        // If we found a localhost URL but we are in production, ignore it
-        if (process.env.NODE_ENV === 'production' && baseUrl && baseUrl.includes('localhost')) {
-            console.warn('Detected localhost URL in production, ignoring for redirect:', baseUrl);
-            baseUrl = undefined;
-
-            // Try VERCEL_URL again if we just invalidated baseUrl
-            if (process.env.VERCEL_URL) {
-                baseUrl = `https://${process.env.VERCEL_URL}`;
+        if (process.env.NODE_ENV === 'production') {
+            // If we found a localhost URL, or no URL at all, force the production URL
+            if (!baseUrl || baseUrl.includes('localhost')) {
+                console.warn('Using explicit production URL instead of:', baseUrl);
+                baseUrl = PRODUCTION_URL;
             }
         }
 

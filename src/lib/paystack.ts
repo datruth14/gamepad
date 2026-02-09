@@ -75,6 +75,9 @@ export async function initializeDeposit(
     // Determine callback URL - prioritize environment variables
     let appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
+    // Explicit override requested by user
+    const PRODUCTION_URL = 'https://gamepad-beta.vercel.app';
+
     // Use VERCEL_URL if available (automatically set by Vercel)
     if (!appUrl && process.env.VERCEL_URL) {
         appUrl = `https://${process.env.VERCEL_URL}`;
@@ -86,15 +89,11 @@ export async function initializeDeposit(
     }
 
     // Safety check: specific to production environment
-    // If we found a localhost URL but we are in production, ignore it
-    // This handles cases where NEXTAUTH_URL is mistakenly set to localhost in production
-    if (process.env.NODE_ENV === 'production' && appUrl && appUrl.includes('localhost')) {
-        console.warn('Detected localhost URL in production, ignoring:', appUrl);
-        appUrl = undefined;
-
-        // Try VERCEL_URL again if we just invalidated appUrl
-        if (process.env.VERCEL_URL) {
-            appUrl = `https://${process.env.VERCEL_URL}`;
+    if (process.env.NODE_ENV === 'production') {
+        // If we found a localhost URL, or no URL at all, force the production URL
+        if (!appUrl || appUrl.includes('localhost')) {
+            console.warn('Using explicit production URL instead of:', appUrl);
+            appUrl = PRODUCTION_URL;
         }
     }
 
