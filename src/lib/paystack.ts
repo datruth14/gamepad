@@ -73,7 +73,27 @@ export async function initializeDeposit(
     baseUrl?: string
 ): Promise<PaystackInitResponse> {
     // Determine callback URL - prioritize environment variables
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || baseUrl || 'http://localhost:3000';
+    let appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+    // Use VERCEL_URL if available (automatically set by Vercel)
+    if (!appUrl && process.env.VERCEL_URL) {
+        appUrl = `https://${process.env.VERCEL_URL}`;
+    }
+
+    // Fallback to NEXTAUTH_URL (might be undefined on Vercel if inferred)
+    if (!appUrl) {
+        appUrl = process.env.NEXTAUTH_URL;
+    }
+
+    // Fallback to request origin
+    if (!appUrl) {
+        appUrl = baseUrl;
+    }
+
+    // Final fallback
+    if (!appUrl) {
+        appUrl = 'http://localhost:3000';
+    }
 
     // Ensure no trailing slash
     const cleanAppUrl = appUrl.endsWith('/') ? appUrl.slice(0, -1) : appUrl;
