@@ -12,7 +12,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: '🏠' },
         { name: 'Wallet', href: '/dashboard/wallet', icon: '💰' },
-        { name: 'Game History', href: '/dashboard/history', icon: '📜' },
+        { name: 'More Games', href: '/dashboard/history', icon: '📜' },
         { name: 'Profile', href: '/dashboard/profile', icon: '👤' },
     ];
 
@@ -23,8 +23,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 {/* Logo */}
                 <div className="p-4 border-b border-primary-700">
                     <Link href="/dashboard" className="flex items-center space-x-2">
-                        <span className="text-2xl">🙏</span>
-                        <span className="text-xl font-bold text-gradient">BLM</span>
+                        <span className="text-2xl">🎮</span>
+                        <span className="text-xl font-bold text-gradient">Gamepad</span>
                     </Link>
                 </div>
 
@@ -76,8 +76,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-primary-900/95 backdrop-blur-sm border-b border-primary-700">
                 <div className="flex items-center justify-between p-4">
                     <Link href="/dashboard" className="flex items-center space-x-2">
-                        <span className="text-2xl">🙏</span>
-                        <span className="text-xl font-bold text-gradient">BLM</span>
+                        <span className="text-2xl">🎮</span>
+                        <span className="text-xl font-bold text-gradient">Gamepad</span>
                     </Link>
                     <button
                         onClick={() => signOut({ callbackUrl: '/' })}

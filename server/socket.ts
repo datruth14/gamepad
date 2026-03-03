@@ -2,7 +2,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import { createServer } from 'http';
 
 const SOCKET_PORT = parseInt(process.env.SOCKET_PORT || '3001');
-const GAME_SPIN_SECRET = process.env.GAME_SPIN_SECRET || 'blm-spin-secret';
+const GAME_SPIN_SECRET = process.env.GAME_SPIN_SECRET || 'gp-spin-secret';
 
 interface GameRoom {
     gameId: string;

@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import { User, Wallet } from '@/lib/models';
-import { initializeDeposit, nairaToBlm, generateReference } from '@/lib/paystack';
+import { initializeDeposit, nairaToGp, generateReference } from '@/lib/paystack';
 
 export async function POST(request: NextRequest) {
     try {
@@ -37,12 +37,12 @@ export async function POST(request: NextRequest) {
 
         const reference = generateReference('DEP');
         const amountInKobo = amount * 100;
-        const blmAmount = nairaToBlm(amount);
+        const gpAmount = nairaToGp(amount);
 
         console.log('Creating deposit transaction:', {
             userId: session.user.id,
             reference,
-            blmAmount,
+            gpAmount,
             amountInNaira: amount,
         });
 
@@ -61,9 +61,9 @@ export async function POST(request: NextRequest) {
         // Add pending transaction to the wallet
         wallet.transactions.push({
             type: 'deposit',
-            amount: blmAmount,
+            amount: gpAmount,
             reference,
-            description: `Deposit of ₦${amount.toLocaleString()} (${blmAmount.toLocaleString()} BLM)`,
+            description: `Deposit of ₦${amount.toLocaleString()} (${gpAmount.toLocaleString()} GP)`,
             status: 'pending',
             createdAt: new Date(),
         });
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
             user.email,
             amountInKobo,
             reference,
-            { userId: session.user.id, blmAmount },
+            { userId: session.user.id, gpAmount },
             origin
         );
 
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
             message: 'Payment initialized',
             authorizationUrl: paystackResponse.data.authorization_url,
             reference: paystackResponse.data.reference,
-            blmAmount,
+            gpAmount,
         });
     } catch (error) {
         console.error('Deposit error:', error);

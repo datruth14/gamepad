@@ -5,7 +5,7 @@ import dbConnect from '@/lib/db';
 import { Wallet } from '@/lib/models';
 import {
     calculateWithdrawalFee,
-    blmToNaira,
+    gpToNaira,
     createTransferRecipient,
     initiateTransfer,
     generateReference,
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
         if (!amount || amount < 1000) {
             return NextResponse.json(
-                { error: 'Minimum withdrawal is 1,000 BLM' },
+                { error: 'Minimum withdrawal is 1,000 GP' },
                 { status: 400 }
             );
         }
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
 
         // Calculate fee and net amount
         const { fee, netAmount } = calculateWithdrawalFee(amount);
-        const nairaAmount = blmToNaira(netAmount);
+        const nairaAmount = gpToNaira(netAmount);
         const nairaAmountInKobo = Math.round(nairaAmount * 100);
 
         // Create transfer recipient
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
                     fee,
                     netAmount,
                     reference,
-                    description: `Withdrawal of ${netAmount.toLocaleString()} BLM (₦${nairaAmount.toLocaleString()}) - Fee: ${fee.toLocaleString()} BLM`,
+                    description: `Withdrawal of ${netAmount.toLocaleString()} GP (₦${nairaAmount.toLocaleString()}) - Fee: ${fee.toLocaleString()} GP`,
                     status: 'pending',
                     createdAt: new Date(),
                 },

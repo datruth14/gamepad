@@ -73,7 +73,7 @@ export default function DashboardPage() {
 
     const handleJoinGame = async (tier: number) => {
         if (wallet && wallet.balance < tier) {
-            alert(`Insufficient balance. You need ${tier.toLocaleString()} BLM to join this game.`);
+            alert(`Insufficient balance. You need ${tier.toLocaleString()} GP to join this game.`);
             return;
         }
 
@@ -119,13 +119,13 @@ export default function DashboardPage() {
                     <h1 className="text-2xl md:text-3xl font-bold">
                         Welcome back, <span className="text-gold">{session?.user?.name?.split(' ')[0]}</span>!
                     </h1>
-                    <p className="text-primary-400 mt-1">Ready to find your blessing?</p>
+                    <p className="text-primary-400 mt-1">Ready to find your game?</p>
                 </div>
                 <div className="flex items-center space-x-4">
                     <div className="card py-3 px-5">
                         <div className="text-sm text-primary-400">Your Balance</div>
                         <div className="text-2xl font-bold text-gold">
-                            {wallet?.balance.toLocaleString() || '0'} <span className="text-sm">BLM</span>
+                            {wallet?.balance.toLocaleString() || '0'} <span className="text-sm">GP</span>
                         </div>
                     </div>
                     <Link href="/dashboard/wallet" className="btn btn-primary">
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
                                             <div className="text-3xl font-bold">{tierData.label}</div>
-                                            <div className="text-sm text-primary-400">BLM Entry</div>
+                                            <div className="text-sm text-primary-400">GP Entry</div>
                                         </div>
                                         <div className="text-right">
                                             <div className="text-sm text-primary-400">Players</div>
@@ -182,7 +182,7 @@ export default function DashboardPage() {
                                     <div className="flex justify-between items-center text-sm mb-4">
                                         <span className="text-primary-400">Win up to</span>
                                         <span className="text-success font-bold">
-                                            {(tierData.tier * 10 * 0.8).toLocaleString()} BLM
+                                            {(tierData.tier * 10 * 0.8).toLocaleString()} GP
                                         </span>
                                     </div>
 
@@ -221,7 +221,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="card text-center">
                     <div className="text-3xl mb-2">💰</div>
-                    <div className="text-2xl font-bold text-success">0 BLM</div>
+                    <div className="text-2xl font-bold text-success">0 GP</div>
                     <div className="text-sm text-primary-400">Total Winnings</div>
                 </div>
                 <div className="card text-center">

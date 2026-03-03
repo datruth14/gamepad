@@ -18,7 +18,7 @@ interface EmailOptions {
 
 export async function sendEmail({ to, subject, html }: EmailOptions): Promise<void> {
   await transporter.sendMail({
-    from: `"BLM Game" <${process.env.SMTP_USER}>`,
+    from: `"Gamepad" <${process.env.SMTP_USER}>`,
     to,
     subject,
     html,
@@ -45,8 +45,7 @@ export async function sendPasswordResetEmail(email: string, token: string): Prom
     <body>
       <div class="container">
         <div class="header">
-          <div class="logo">🙏 BLM</div>
-          <p>Blessings Locate Me</p>
+          <div class="logo">🎮 Gamepad</div>
         </div>
         <div class="content">
           <h2>Password Reset Request</h2>
@@ -67,7 +66,7 @@ export async function sendPasswordResetEmail(email: string, token: string): Prom
 
   await sendEmail({
     to: email,
-    subject: 'Reset Your BLM Password',
+    subject: 'Reset Your Gamepad Password',
     html,
   });
 }
@@ -90,19 +89,18 @@ export async function sendWelcomeEmail(email: string, fullName: string): Promise
     <body>
       <div class="container">
         <div class="header">
-          <div class="logo">🙏 BLM</div>
-          <p>Blessings Locate Me</p>
+          <div class="logo">🎮 Gamepad</div>
         </div>
         <div class="content">
           <h2>Welcome, ${fullName}! 🎉</h2>
           <p>Your account has been successfully created. You're now ready to:</p>
           <ul>
-            <li>💰 Deposit BLM coins to your wallet</li>
-            <li>🎮 Join game lobbies from 1,000 to 40,000 BLM</li>
+            <li>💰 Deposit GP coins to your wallet</li>
+            <li>🎮 Join game lobbies from 1,000 to 40,000 GP</li>
             <li>🏆 Spin the wheel and win big!</li>
           </ul>
-          <p>Remember: <span class="highlight">1,000 BLM = ₦500</span></p>
-          <p>Good luck and may the blessings locate you!</p>
+          <p>Remember: <span class="highlight">1,000 GP = ₦500</span></p>
+          <p>Good luck and may the games be in your favor!</p>
         </div>
         <div class="footer">
           <p>Powered by Gamepad Ltd</p>
@@ -114,7 +112,7 @@ export async function sendWelcomeEmail(email: string, fullName: string): Promise
 
   await sendEmail({
     to: email,
-    subject: 'Welcome to BLM - Blessings Locate Me!',
+    subject: 'Welcome to Gamepad!',
     html,
   });
 }

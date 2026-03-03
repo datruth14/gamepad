@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
                         type: 'refund',
                         amount: tier,
                         reference: `REFUND_${gameId}_${participant.unlockCode}`,
-                        description: `Refund for leaving ${tier.toLocaleString()} BLM game`,
+                        description: `Refund for leaving ${tier.toLocaleString()} GP game`,
                         status: 'completed',
                         createdAt: new Date(),
                     },
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            message: `Left game successfully. ${tier.toLocaleString()} BLM refunded.`,
+            message: `Left game successfully. ${tier.toLocaleString()} GP refunded.`,
             refundedAmount: tier,
         });
     } catch (error) {

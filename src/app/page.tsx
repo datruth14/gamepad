@@ -8,8 +8,8 @@ export default function Home() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         <Link href="/" className="flex items-center space-x-2">
-                            <span className="text-2xl">🙏</span>
-                            <span className="text-xl font-bold text-gradient">BLM</span>
+                            <span className="text-2xl">🎮</span>
+                            <span className="text-xl font-bold text-gradient">Gamepad</span>
                         </Link>
                         <div className="flex items-center space-x-4">
                             <Link href="/login" className="btn btn-ghost">
@@ -34,8 +34,8 @@ export default function Home() {
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold mb-6">
-                        <span className="text-white">Blessings</span>{' '}
-                        <span className="text-gradient">Locate Me</span>
+                        <span className="text-white">Game</span>{' '}
+                        <span className="text-gradient">Pad</span>
                     </h1>
 
                     <p className="text-xl md:text-2xl text-primary-300 mb-8 max-w-3xl mx-auto">
@@ -84,12 +84,12 @@ export default function Home() {
                             {
                                 icon: '💰',
                                 title: '1. Fund Your Wallet',
-                                description: 'Add BLM coins using Paystack. 1,000 BLM = ₦500.',
+                                description: 'Add Gamepad coins using Paystack. 1,000 GP = ₦500.',
                             },
                             {
                                 icon: '🎮',
                                 title: '2. Choose Your Tier',
-                                description: 'Pick from 6 tiers: 1K, 2K, 4K, 10K, 20K, or 40K BLM.',
+                                description: 'Pick from 6 tiers: 1K, 2K, 4K, 10K, 20K, or 40K GP.',
                             },
                             {
                                 icon: '⏳',
@@ -140,7 +140,7 @@ export default function Home() {
                                     <div>
                                         <div className="text-sm text-primary-400">Entry Fee</div>
                                         <div className="text-2xl font-bold">
-                                            {item.tier.toLocaleString()} <span className="text-gold">BLM</span>
+                                            {item.tier.toLocaleString()} <span className="text-gold">GP</span>
                                         </div>
                                     </div>
                                     {index >= 3 && (
@@ -152,11 +152,11 @@ export default function Home() {
                                 <div className="space-y-2 text-sm">
                                     <div className="flex justify-between">
                                         <span className="text-primary-400">Total Pool</span>
-                                        <span className="font-medium">{item.pool.toLocaleString()} BLM</span>
+                                        <span className="font-medium">{item.pool.toLocaleString()} GP</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-primary-400">Winner Gets</span>
-                                        <span className="font-medium text-success">{item.win.toLocaleString()} BLM</span>
+                                        <span className="font-medium text-success">{item.win.toLocaleString()} GP</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-primary-400">In Naira</span>
@@ -187,7 +187,7 @@ export default function Home() {
                             'The winner receives 80% of the total pool. 20% is retained by the platform.',
                             'Winnings are credited instantly to your wallet.',
                             'You must be 18 years or older to participate.',
-                            'Minimum deposit: ₦500 (1,000 BLM). Minimum withdrawal: 1,000 BLM.',
+                            'Minimum deposit: ₦500 (1,000 GP). Minimum withdrawal: 1,000 GP.',
                             'Withdrawal fee: 5% of the amount.',
                         ].map((rule, index) => (
                             <div key={index} className="flex items-start gap-4 p-4 bg-primary-800/50 rounded-lg">
@@ -204,7 +204,7 @@ export default function Home() {
             {/* CTA */}
             <section className="py-20 px-4">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="text-4xl font-bold mb-6">Ready to Find Your Blessing?</h2>
+                    <h2 className="text-4xl font-bold mb-6">Ready to Find Your Game?</h2>
                     <p className="text-xl text-primary-300 mb-8">
                         Join thousands of winners. Your next big win is just a spin away!
                     </p>
@@ -218,11 +218,11 @@ export default function Home() {
             <footer className="py-8 px-4 border-t border-primary-800">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                     <div className="flex items-center space-x-2">
-                        <span className="text-2xl">🙏</span>
-                        <span className="text-xl font-bold text-gradient">BLM</span>
+                        <span className="text-2xl">🎮</span>
+                        <span className="text-xl font-bold text-gradient">Gamepad</span>
                     </div>
                     <div className="text-primary-400 text-sm">
-                        © {new Date().getFullYear()} Blessings Locate Me. Powered by{' '}
+                        © {new Date().getFullYear()} Gamepad. Powered by{' '}
                         <span className="text-gold font-medium">Gamepad Ltd</span>
                     </div>
                     <div className="flex items-center space-x-6">

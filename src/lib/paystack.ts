@@ -43,25 +43,25 @@ interface PaystackTransferResponse {
     };
 }
 
-// BLM to Naira conversion
-// 1000 BLM = 500 Naira
-// 1 BLM = 0.5 Naira
-// 1 Naira = 2 BLM
-export const BLM_TO_NAIRA_RATE = 0.5;
-export const NAIRA_TO_BLM_RATE = 2;
+// GP to Naira conversion
+// 1000 GP = 500 Naira
+// 1 GP = 0.5 Naira
+// 1 Naira = 2 GP
+export const GP_TO_NAIRA_RATE = 0.5;
+export const NAIRA_TO_GP_RATE = 2;
 export const WITHDRAWAL_FEE_PERCENT = 5;
 
-export function blmToNaira(blmAmount: number): number {
-    return blmAmount * BLM_TO_NAIRA_RATE;
+export function gpToNaira(gpAmount: number): number {
+    return gpAmount * GP_TO_NAIRA_RATE;
 }
 
-export function nairaToBlm(nairaAmount: number): number {
-    return nairaAmount * NAIRA_TO_BLM_RATE;
+export function nairaToGp(nairaAmount: number): number {
+    return nairaAmount * NAIRA_TO_GP_RATE;
 }
 
-export function calculateWithdrawalFee(blmAmount: number): { fee: number; netAmount: number } {
-    const fee = Math.round(blmAmount * (WITHDRAWAL_FEE_PERCENT / 100));
-    const netAmount = blmAmount - fee;
+export function calculateWithdrawalFee(gpAmount: number): { fee: number; netAmount: number } {
+    const fee = Math.round(gpAmount * (WITHDRAWAL_FEE_PERCENT / 100));
+    const netAmount = gpAmount - fee;
     return { fee, netAmount };
 }
 
@@ -196,7 +196,7 @@ export async function initiateTransfer(
             amount: amountInKobo,
             recipient: recipientCode,
             reference,
-            reason: reason || 'BLM Withdrawal',
+            reason: reason || 'Gamepad Withdrawal',
         }),
     });
 
@@ -214,7 +214,7 @@ export async function listBanks(): Promise<{ status: boolean; data: Array<{ name
     return response.json();
 }
 
-export function generateReference(prefix: string = 'BLM'): string {
+export function generateReference(prefix: string = 'GP'): string {
     const timestamp = Date.now().toString(36);
     const random = Math.random().toString(36).substring(2, 8);
     return `${prefix}_${timestamp}_${random}`.toUpperCase();

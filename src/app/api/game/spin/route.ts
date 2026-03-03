@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     try {
         const { gameId, secret } = await request.json();
 
-        const validSecret = process.env.GAME_SPIN_SECRET || 'blm-game-spin-secret-change-in-production';
+        const validSecret = process.env.GAME_SPIN_SECRET || 'gp-game-spin-secret-change-in-production';
         const isAuthorizedSecret = secret === validSecret;
 
         // Check authentication if secret is invalid
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
                         type: 'game_win',
                         amount: winnerPayout,
                         reference: `WIN_${gameGroup._id}`,
-                        description: `Won ${winnerPayout.toLocaleString()} BLM in ${(gameGroup.tier).toLocaleString()} BLM game!`,
+                        description: `Won ${winnerPayout.toLocaleString()} GP in ${(gameGroup.tier).toLocaleString()} GP game!`,
                         status: 'completed',
                         createdAt: new Date(),
                     },

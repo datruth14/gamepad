@@ -58,8 +58,8 @@ export default function ForgotPasswordPage() {
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center space-x-2">
-                        <span className="text-4xl">🙏</span>
-                        <span className="text-3xl font-bold text-gradient">BLM</span>
+                        <span className="text-4xl">🎮</span>
+                        <span className="text-3xl font-bold text-gradient">Gamepad</span>
                     </Link>
                     <h1 className="text-2xl font-bold mt-4">Forgot Password?</h1>
                     <p className="text-primary-400 mt-2">

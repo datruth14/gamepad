@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import { Wallet } from '@/lib/models';
-import { verifyTransaction, nairaToBlm } from '@/lib/paystack';
+import { verifyTransaction, nairaToGp } from '@/lib/paystack';
 
 export async function GET(request: NextRequest) {
     try {
@@ -88,10 +88,10 @@ export async function GET(request: NextRequest) {
             return NextResponse.redirect(new URL('/dashboard/wallet?error=payment_failed', baseUrl));
         }
 
-        // Calculate BLM amount from Naira
+        // Calculate GP amount from Naira
         const amountInNaira = paystackResponse.data.amount / 100;
-        const blmAmount = nairaToBlm(amountInNaira);
-        console.log('Amount - Naira:', amountInNaira, 'BLM:', blmAmount);
+        const gpAmount = nairaToGp(amountInNaira);
+        console.log('Amount - Naira:', amountInNaira, 'GP:', gpAmount);
 
         // Update wallet balance and transaction status
         const updateResult = await Wallet.updateOne(
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
                 }
             },
             {
-                $inc: { balance: blmAmount },
+                $inc: { balance: gpAmount },
                 $set: { 'transactions.$.status': 'completed' },
             }
         );
@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
             if (maybeCompleted) {
                 console.log('Transaction was already processed');
                 return NextResponse.redirect(
-                    new URL(`/dashboard/wallet?success=true&amount=${blmAmount}`, baseUrl)
+                    new URL(`/dashboard/wallet?success=true&amount=${gpAmount}`, baseUrl)
                 );
             }
 
@@ -130,10 +130,10 @@ export async function GET(request: NextRequest) {
         }
 
         console.log('=== Payment Verification Successful ===');
-        console.log('Credited', blmAmount, 'BLM');
+        console.log('Credited', gpAmount, 'GP');
 
         return NextResponse.redirect(
-            new URL(`/dashboard/wallet?success=true&amount=${blmAmount}`, baseUrl)
+            new URL(`/dashboard/wallet?success=true&amount=${gpAmount}`, baseUrl)
         );
     } catch (error) {
         console.error('Verify deposit error:', error);
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
         if (event === 'charge.success') {
             const reference = data.reference;
             const amountInNaira = data.amount / 100;
-            const blmAmount = nairaToBlm(amountInNaira);
+            const gpAmount = nairaToGp(amountInNaira);
 
             await dbConnect();
 
@@ -170,13 +170,13 @@ export async function POST(request: NextRequest) {
                     }
                 },
                 {
-                    $inc: { balance: blmAmount },
+                    $inc: { balance: gpAmount },
                     $set: { 'transactions.$.status': 'completed' },
                 }
             );
 
             if (result.modifiedCount > 0) {
-                console.log('Webhook: Credited', blmAmount, 'BLM for reference', reference);
+                console.log('Webhook: Credited', gpAmount, 'GP for reference', reference);
             } else {
                 console.log('Webhook: Transaction already processed or not found for', reference);
             }

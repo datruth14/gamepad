@@ -213,7 +213,7 @@ function LobbyContent() {
             const spinResponse = await fetch('/api/game/spin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ gameId, secret: 'blm-game-spin-secret-change-in-production' }),
+                body: JSON.stringify({ gameId, secret: 'gp-game-spin-secret-change-in-production' }),
             });
 
             if (spinResponse.ok) {
@@ -338,7 +338,7 @@ function LobbyContent() {
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <h1 className="text-2xl md:text-3xl font-bold">
-                            {tier.toLocaleString()} BLM Game
+                            {tier.toLocaleString()} GP Game
                         </h1>
                         <p className="text-primary-400">
                             Your code:{' '}
@@ -407,7 +407,7 @@ function LobbyContent() {
                                             YOU WON!
                                         </h2>
                                         <p className="text-3xl font-bold text-success">
-                                            +{gameState.winnerPayout?.toLocaleString()} BLM
+                                            +{gameState.winnerPayout?.toLocaleString()} GP
                                         </p>
                                         <p className="text-primary-400 mt-2">
                                             Congratulations! Winnings added to your wallet.
@@ -434,18 +434,18 @@ function LobbyContent() {
                             <div className="space-y-3">
                                 <div className="flex justify-between">
                                     <span className="text-primary-400">Entry Fee</span>
-                                    <span className="font-bold">{tier.toLocaleString()} BLM</span>
+                                    <span className="font-bold">{tier.toLocaleString()} GP</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-primary-400">Total Pool</span>
                                     <span className="font-bold text-gold">
-                                        {(tier * gameState.participantCount).toLocaleString()} BLM
+                                        {(tier * gameState.participantCount).toLocaleString()} GP
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-primary-400">Winner Gets (80%)</span>
                                     <span className="font-bold text-success">
-                                        {Math.round(tier * gameState.participantCount * 0.8).toLocaleString()} BLM
+                                        {Math.round(tier * gameState.participantCount * 0.8).toLocaleString()} GP
                                     </span>
                                 </div>
                             </div>

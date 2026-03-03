@@ -121,7 +121,7 @@ function WalletContent() {
         const amount = parseInt(withdrawAmount);
 
         if (amount < 1000) {
-            alert('Minimum withdrawal is 1,000 BLM');
+            alert('Minimum withdrawal is 1,000 GP');
             return;
         }
 
@@ -150,7 +150,7 @@ function WalletContent() {
                 throw new Error(data.error || 'Failed to process withdrawal');
             }
 
-            alert(`Withdrawal of ${data.netAmount.toLocaleString()} BLM initiated successfully!`);
+            alert(`Withdrawal of ${data.netAmount.toLocaleString()} GP initiated successfully!`);
             setWithdrawAmount('');
             setAccountNumber('');
             setAccountName('');
@@ -201,12 +201,12 @@ function WalletContent() {
     const calculateWithdrawalPreview = () => {
         const amount = parseInt(withdrawAmount) || 0;
         const fee = Math.round(amount * 0.05);
-        const netBlm = amount - fee;
-        const netNaira = netBlm / 2;
-        return { fee, netBlm, netNaira };
+        const netGp = amount - fee;
+        const netNaira = netGp / 2;
+        return { fee, netGp, netNaira };
     };
 
-    const blmFromDeposit = () => {
+    const gpFromDeposit = () => {
         const amount = parseInt(depositAmountInput) || 0;
         return amount * 2;
     };
@@ -227,7 +227,7 @@ function WalletContent() {
             {/* Success/Error Messages */}
             {success && (
                 <div className="p-4 bg-success/10 border border-success/30 rounded-lg">
-                    ✅ Successfully deposited {parseInt(depositAmount || '0').toLocaleString()} BLM!
+                    ✅ Successfully deposited {parseInt(depositAmount || '0').toLocaleString()} GP!
                 </div>
             )}
             {error && (
@@ -240,7 +240,7 @@ function WalletContent() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold">My Wallet</h1>
-                    <p className="text-primary-400 mt-1">Manage your BLM coins</p>
+                    <p className="text-primary-400 mt-1">Manage your GP coins</p>
                 </div>
                 <Link href="/dashboard" className="btn btn-secondary">
                     ← Back
@@ -251,7 +251,7 @@ function WalletContent() {
             <div className="card bg-gradient-to-r from-gold/20 to-amber-600/20 border-gold/30">
                 <div className="text-sm text-primary-300 mb-2">Available Balance</div>
                 <div className="text-4xl md:text-5xl font-bold text-gold mb-2">
-                    {wallet?.balance.toLocaleString() || '0'} <span className="text-xl">BLM</span>
+                    {wallet?.balance.toLocaleString() || '0'} <span className="text-xl">GP</span>
                 </div>
                 <div className="text-primary-400">
                     ≈ ₦{((wallet?.balance || 0) / 2).toLocaleString()}
@@ -302,7 +302,7 @@ function WalletContent() {
                                     <div className="flex justify-between text-sm">
                                         <span className="text-primary-400">You will receive</span>
                                         <span className="text-gold font-bold">
-                                            {blmFromDeposit().toLocaleString()} BLM
+                                            {gpFromDeposit().toLocaleString()} GP
                                         </span>
                                     </div>
                                 </div>
@@ -317,19 +317,19 @@ function WalletContent() {
                             </button>
 
                             <p className="text-xs text-primary-400 text-center">
-                                Rate: 1,000 BLM = ₦500 | Powered by Paystack
+                                Rate: 1,000 GP = ₦500 | Powered by Paystack
                             </p>
                         </form>
                     ) : (
                         <form onSubmit={handleWithdraw} className="space-y-4">
                             <div>
-                                <label className="label">Amount in BLM</label>
+                                <label className="label">Amount in GP</label>
                                 <input
                                     type="number"
                                     value={withdrawAmount}
                                     onChange={(e) => setWithdrawAmount(e.target.value)}
                                     className="input"
-                                    placeholder="Enter amount (min 1,000 BLM)"
+                                    placeholder="Enter amount (min 1,000 GP)"
                                     min="1000"
                                     max={wallet?.balance || 0}
                                     required
@@ -383,7 +383,7 @@ function WalletContent() {
                                     <div className="flex justify-between text-sm">
                                         <span className="text-primary-400">Fee (5%)</span>
                                         <span className="text-danger">
-                                            -{calculateWithdrawalPreview().fee.toLocaleString()} BLM
+                                            -{calculateWithdrawalPreview().fee.toLocaleString()} GP
                                         </span>
                                     </div>
                                     <div className="flex justify-between text-sm">
@@ -435,7 +435,7 @@ function WalletContent() {
                                     <div className="text-right">
                                         <div className={`font-bold ${getTransactionColor(tx.type)}`}>
                                             {tx.type === 'withdrawal' || tx.type === 'game_entry' ? '-' : '+'}
-                                            {tx.amount.toLocaleString()} BLM
+                                            {tx.amount.toLocaleString()} GP
                                         </div>
                                         <div
                                             className={`text-xs ${tx.status === 'completed'

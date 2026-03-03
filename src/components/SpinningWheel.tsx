@@ -108,7 +108,7 @@ export default function SpinningWheel({
         ctx.font = 'bold 12px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('BLM', centerX, centerY);
+        ctx.fillText('GP', centerX, centerY);
     }, [participants]);
 
     // Handle spinning animation

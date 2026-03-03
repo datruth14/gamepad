@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         if (wallet.balance < tier) {
             console.log('ERROR: Insufficient balance', wallet.balance, '<', tier);
             return NextResponse.json(
-                { error: `Insufficient balance. You need ${tier.toLocaleString()} BLM to join this game. You have ${wallet.balance.toLocaleString()} BLM.` },
+                { error: `Insufficient balance. You need ${tier.toLocaleString()} GP to join this game. You have ${wallet.balance.toLocaleString()} GP.` },
                 { status: 400 }
             );
         }
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
                         type: 'game_entry',
                         amount: tier,
                         reference: `GAME_${gameId}_${unlockCode}`,
-                        description: `Joined ${tier.toLocaleString()} BLM game - Unlock Code: ${unlockCode}`,
+                        description: `Joined ${tier.toLocaleString()} GP game - Unlock Code: ${unlockCode}`,
                         status: 'completed',
                         createdAt: new Date(),
                     },
