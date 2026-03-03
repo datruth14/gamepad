@@ -8,6 +8,7 @@ export interface IParticipant {
     fullName: string;
     unlockCode: string;
     joinedAt: Date;
+    isBot?: boolean;
 }
 
 export interface IGameGroup extends Document {
@@ -45,6 +46,10 @@ const ParticipantSchema = new Schema<IParticipant>(
         joinedAt: {
             type: Date,
             default: Date.now,
+        },
+        isBot: {
+            type: Boolean,
+            default: false,
         },
     },
     { _id: false }

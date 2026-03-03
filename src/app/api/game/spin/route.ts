@@ -79,23 +79,28 @@ export async function POST(request: NextRequest) {
         gameGroup.status = 'completed';
         await gameGroup.save();
 
-        // Credit winner's wallet
-        await Wallet.findOneAndUpdate(
-            { userId: winner.userId },
-            {
-                $inc: { balance: winnerPayout },
-                $push: {
-                    transactions: {
-                        type: 'game_win',
-                        amount: winnerPayout,
-                        reference: `WIN_${gameGroup._id}`,
-                        description: `Won ${winnerPayout.toLocaleString()} GP in ${(gameGroup.tier).toLocaleString()} GP game!`,
-                        status: 'completed',
-                        createdAt: new Date(),
+        // Credit winner's wallet ONLY if they are not a bot
+        if (!winner.isBot) {
+            console.log(`Crediting real winner ${winner.fullName}: ${winnerPayout} GP`);
+            await Wallet.findOneAndUpdate(
+                { userId: winner.userId },
+                {
+                    $inc: { balance: winnerPayout },
+                    $push: {
+                        transactions: {
+                            type: 'game_win',
+                            amount: winnerPayout,
+                            reference: `WIN_${gameGroup._id}`,
+                            description: `Won ${winnerPayout.toLocaleString()} GP in ${(gameGroup.tier).toLocaleString()} GP game!`,
+                            status: 'completed',
+                            createdAt: new Date(),
+                        },
                     },
-                },
-            }
-        );
+                }
+            );
+        } else {
+            console.log(`Bot ${winner.fullName} won. Skipping wallet update.`);
+        }
 
         return NextResponse.json({
             success: true,
