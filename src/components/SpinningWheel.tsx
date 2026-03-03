@@ -113,7 +113,7 @@ export default function SpinningWheel({
 
     // Handle spinning animation
     useEffect(() => {
-        if (isSpinning && !hasSpun) {
+        if (isSpinning) {
             setHasSpun(true);
             setRotation(spinDegrees);
 
@@ -125,8 +125,11 @@ export default function SpinningWheel({
             }, 5000);
 
             return () => clearTimeout(timeout);
+        } else if (hasSpun) {
+            // Ensure rotation is set to final degrees if we stopped spinning
+            setRotation(spinDegrees);
         }
-    }, [isSpinning, spinDegrees, hasSpun, onSpinComplete]);
+    }, [isSpinning, spinDegrees]);
 
     return (
         <div className="relative">
@@ -137,7 +140,7 @@ export default function SpinningWheel({
 
             {/* Wheel Container */}
             <div
-                className={`transition-transform ${isSpinning ? 'wheel-spinning' : ''}`}
+                className={isSpinning ? 'wheel-spinning' : ''}
                 style={{
                     transform: `rotate(${isSpinning ? 0 : rotation}deg)`,
                     ['--spin-degrees' as string]: `${spinDegrees}deg`,
