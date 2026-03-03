@@ -39,7 +39,7 @@ export default function Home() {
                     </h1>
 
                     <p className="text-xl md:text-2xl text-primary-300 mb-8 max-w-3xl mx-auto">
-                        Join gamepad games and win Up to 10 players enter, 1 walks away with{' '}
+                        Join gamepad games and win, Up to 10 players enter, 1 walks away with{' '}
                         <span className="text-gold font-bold">80% of the pool</span>.
                     </p>
 
