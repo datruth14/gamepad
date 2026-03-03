@@ -51,7 +51,6 @@ export default function SpinningWheel({
         const radius = Math.min(centerX, centerY) - 10;
 
         // Dynamically calculate segments based on participants
-        // Ensure at least 2 segments for visual balance even if 1 player (though game needs 2)
         const segmentCount = Math.max(2, participants.length);
         const segmentAngle = (2 * Math.PI) / segmentCount;
 
@@ -70,7 +69,7 @@ export default function SpinningWheel({
             ctx.closePath();
 
             // Fill with color
-            ctx.fillStyle = COLORS[i];
+            ctx.fillStyle = COLORS[i % COLORS.length];
             ctx.fill();
 
             // Draw border
@@ -111,7 +110,7 @@ export default function SpinningWheel({
         ctx.fillText('GP', centerX, centerY);
     }, [participants]);
 
-    // Handle spinning animation
+    // Handle spinning animation state
     useEffect(() => {
         if (isSpinning) {
             setHasSpun(true);
@@ -125,11 +124,13 @@ export default function SpinningWheel({
             }, 5000);
 
             return () => clearTimeout(timeout);
-        } else if (hasSpun) {
-            // Ensure rotation is set to final degrees if we stopped spinning
+        } else if (!hasSpun && spinDegrees !== 0) {
+            // Case where we load into a finished game
+            // but haven't "spun" visually in this component session
             setRotation(spinDegrees);
+            setHasSpun(true);
         }
-    }, [isSpinning, spinDegrees]);
+    }, [isSpinning, spinDegrees, hasSpun, onSpinComplete]);
 
     return (
         <div className="relative">
@@ -138,12 +139,11 @@ export default function SpinningWheel({
                 <div className="w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[30px] border-t-gold drop-shadow-lg" />
             </div>
 
-            {/* Wheel Container */}
+            {/* Wheel Container - Using CSS transition instead of @keyframes for better reliability with React state */}
             <div
-                className={isSpinning ? 'wheel-spinning' : ''}
                 style={{
-                    transform: `rotate(${isSpinning ? 0 : rotation}deg)`,
-                    ['--spin-degrees' as string]: `${spinDegrees}deg`,
+                    transform: `rotate(${rotation}deg)`,
+                    transition: isSpinning ? 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)' : 'none',
                 }}
             >
                 <canvas
@@ -156,7 +156,7 @@ export default function SpinningWheel({
 
             {/* Winner highlight */}
             {winnerIndex !== undefined && !isSpinning && hasSpun && (
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="absolute inset-0 bg-black/50 rounded-full animate-pulse" />
                 </div>
             )}
