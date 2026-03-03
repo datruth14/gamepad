@@ -4,12 +4,12 @@ import { Providers } from './providers';
 
 export const metadata: Metadata = {
     title: 'Gamepad',
-    description: 'Join the ultimate spin-to-win game! Compete with up to 10 players, spin the wheel, and win 80% of the pool.',
+    description: 'Join gamepad games and win Compete with up to 10 players, spin the wheel, and win 80% of the pool.',
     keywords: ['Gamepad', 'spin wheel', 'win', 'game', 'multiplayer'],
     authors: [{ name: 'Gamepad Ltd' }],
     openGraph: {
         title: 'Gamepad',
-        description: 'Join the ultimate spin-to-win game! Compete with up to 10 players, spin the wheel, and win 80% of the pool.',
+        description: 'Join gamepad games and win Compete with up to 10 players, spin the wheel, and win 80% of the pool.',
         type: 'website',
     },
 };
