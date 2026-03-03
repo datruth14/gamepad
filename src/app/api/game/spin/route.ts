@@ -82,10 +82,29 @@ export async function POST(request: NextRequest) {
 
         // House User ID for bot winnings and system fees
         const HOUSE_USER_ID = '69641d951944dec40bbf722a'; // 14eter@gmail.com
-        const HOUSE_EMAIL = '14eter@gmail.com';
 
-        // Credit winner's wallet
-        if (!winner.isBot) {
+        if (winner.isBot) {
+            // If bot wins, house takes 100% of the pool in one "inscribed" transaction
+            console.log(`Bot ${winner.fullName} won. Crediting 100% pool to house wallet: ${totalPool} GP`);
+            await Wallet.findOneAndUpdate(
+                { userId: new mongoose.Types.ObjectId(HOUSE_USER_ID) },
+                {
+                    $inc: { balance: totalPool },
+                    $push: {
+                        transactions: {
+                            type: 'game_win',
+                            amount: totalPool,
+                            reference: `BOT_WIN_FULL_${gameGroup._id}`,
+                            description: `INSCRIPTION: Bot ${winner.fullName} won ${totalPool.toLocaleString()} GP (100% pool) in ${(gameGroup.tier).toLocaleString()} GP game! Credited to house wallet via 14eter@gmail.com.`,
+                            status: 'completed',
+                            createdAt: new Date(),
+                        },
+                    },
+                },
+                { upsert: true }
+            );
+        } else {
+            // If real player wins, credit 80% to winner and 20% fee to house
             console.log(`Crediting real winner ${winner.fullName}: ${winnerPayout} GP`);
             await Wallet.findOneAndUpdate(
                 { userId: winner.userId },
@@ -103,18 +122,19 @@ export async function POST(request: NextRequest) {
                     },
                 }
             );
-        } else {
-            console.log(`Bot ${winner.fullName} won. Crediting house wallet: ${winnerPayout} GP`);
+
+            // Also credit system fee (20%) to house wallet
+            console.log(`Crediting system fee to house wallet: ${systemFee} GP`);
             await Wallet.findOneAndUpdate(
                 { userId: new mongoose.Types.ObjectId(HOUSE_USER_ID) },
                 {
-                    $inc: { balance: winnerPayout },
+                    $inc: { balance: systemFee },
                     $push: {
                         transactions: {
                             type: 'game_win',
-                            amount: winnerPayout,
-                            reference: `BOT_WIN_${gameGroup._id}`,
-                            description: `Bot ${winner.fullName} won in ${(gameGroup.tier).toLocaleString()} GP game! Funds credited to board.`,
+                            amount: systemFee,
+                            reference: `FEE_${gameGroup._id}`,
+                            description: `System fee (20%) from ${(gameGroup.tier).toLocaleString()} GP game won by ${winner.fullName}!`,
                             status: 'completed',
                             createdAt: new Date(),
                         },
@@ -123,26 +143,6 @@ export async function POST(request: NextRequest) {
                 { upsert: true }
             );
         }
-
-        // Also credit system fee to house wallet
-        console.log(`Crediting system fee to house wallet: ${systemFee} GP`);
-        await Wallet.findOneAndUpdate(
-            { userId: new mongoose.Types.ObjectId(HOUSE_USER_ID) },
-            {
-                $inc: { balance: systemFee },
-                $push: {
-                    transactions: {
-                        type: 'game_win', // Using game_win for fee collection as well, or we could add 'fee_collection' type
-                        amount: systemFee,
-                        reference: `FEE_${gameGroup._id}`,
-                        description: `System fee (20%) from ${(gameGroup.tier).toLocaleString()} GP game!`,
-                        status: 'completed',
-                        createdAt: new Date(),
-                    },
-                },
-            },
-            { upsert: true }
-        );
 
         return NextResponse.json({
             success: true,
