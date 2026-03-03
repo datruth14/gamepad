@@ -37,6 +37,7 @@ export default function SpinningWheel({
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [rotation, setRotation] = useState(0);
     const [hasSpun, setHasSpun] = useState(false);
+    const spinStartedRef = useRef(false);
 
     // Draw the wheel
     useEffect(() => {
@@ -50,34 +51,27 @@ export default function SpinningWheel({
         const centerY = canvas.height / 2;
         const radius = Math.min(centerX, centerY) - 10;
 
-        // Dynamically calculate segments based on participants
         const segmentCount = Math.max(2, participants.length);
         const segmentAngle = (2 * Math.PI) / segmentCount;
 
-        // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw segments
         for (let i = 0; i < segmentCount; i++) {
             const startAngle = i * segmentAngle - Math.PI / 2;
             const endAngle = startAngle + segmentAngle;
 
-            // Draw segment
             ctx.beginPath();
             ctx.moveTo(centerX, centerY);
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
             ctx.closePath();
 
-            // Fill with color
             ctx.fillStyle = COLORS[i % COLORS.length];
             ctx.fill();
 
-            // Draw border
             ctx.strokeStyle = '#1a1a1a';
             ctx.lineWidth = 3;
             ctx.stroke();
 
-            // Draw unlock code text
             ctx.save();
             ctx.translate(centerX, centerY);
             ctx.rotate(startAngle + segmentAngle / 2);
@@ -93,7 +87,6 @@ export default function SpinningWheel({
             ctx.restore();
         }
 
-        // Draw center circle
         ctx.beginPath();
         ctx.arc(centerX, centerY, 30, 0, 2 * Math.PI);
         ctx.fillStyle = '#FFD700';
@@ -102,7 +95,6 @@ export default function SpinningWheel({
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        // Draw center text
         ctx.fillStyle = '#1a1a1a';
         ctx.font = 'bold 12px Inter, sans-serif';
         ctx.textAlign = 'center';
@@ -113,24 +105,35 @@ export default function SpinningWheel({
     // Handle spinning animation state
     useEffect(() => {
         if (isSpinning) {
-            setHasSpun(true);
-            setRotation(spinDegrees);
+            // Only trigger the start of the spin once
+            if (!spinStartedRef.current) {
+                spinStartedRef.current = true;
+                setHasSpun(true);
+                setRotation(spinDegrees);
 
-            // Notify when spin completes
-            const timeout = setTimeout(() => {
-                if (onSpinComplete) {
-                    onSpinComplete();
-                }
-            }, 5000);
+                // Notify when spin completes - only once
+                const timeout = setTimeout(() => {
+                    if (onSpinComplete) {
+                        onSpinComplete();
+                    }
+                }, 5000);
 
-            return () => clearTimeout(timeout);
-        } else if (!hasSpun && spinDegrees !== 0) {
-            // Case where we load into a finished game
-            // but haven't "spun" visually in this component session
-            setRotation(spinDegrees);
-            setHasSpun(true);
+                return () => clearTimeout(timeout);
+            } else if (rotation !== spinDegrees) {
+                // If we get an updated spinResult while already spinning, update the target
+                setRotation(spinDegrees);
+            }
+        } else {
+            // Reset the start trigger when we're finally not spinning
+            spinStartedRef.current = false;
+
+            // Handle case where we load into a finished game
+            if (!hasSpun && spinDegrees !== 0) {
+                setRotation(spinDegrees);
+                setHasSpun(true);
+            }
         }
-    }, [isSpinning, spinDegrees, hasSpun, onSpinComplete]);
+    }, [isSpinning, spinDegrees, hasSpun, onSpinComplete, rotation]);
 
     return (
         <div className="relative">
@@ -139,7 +142,7 @@ export default function SpinningWheel({
                 <div className="w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[30px] border-t-gold drop-shadow-lg" />
             </div>
 
-            {/* Wheel Container - Using CSS transition instead of @keyframes for better reliability with React state */}
+            {/* Wheel Container */}
             <div
                 style={{
                     transform: `rotate(${rotation}deg)`,
