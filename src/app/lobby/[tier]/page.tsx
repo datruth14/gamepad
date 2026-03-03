@@ -85,7 +85,15 @@ function LobbyContent() {
         });
 
         newSocket.on('game-state', (state: GameState) => {
-            setGameState(state);
+            setGameState((prev) => {
+                if (!prev) return state;
+                // Prevent status "downgrade" (e.g. spinning -> countdown)
+                const statusPriority = { 'waiting': 0, 'countdown': 1, 'spinning': 2, 'completed': 3 };
+                if (statusPriority[state.status] < statusPriority[prev.status]) {
+                    return { ...state, status: prev.status };
+                }
+                return state;
+            });
         });
 
         newSocket.on('player-joined', ({ unlockCode }: { unlockCode: string }) => {
@@ -198,7 +206,14 @@ function LobbyContent() {
                 const response = await fetch(`/api/game/${gameId}`);
                 if (response.ok) {
                     const data = await response.json();
-                    setGameState(data);
+                    setGameState((prev) => {
+                        if (!prev) return data;
+                        const statusPriority = { 'waiting': 0, 'countdown': 1, 'spinning': 2, 'completed': 3 };
+                        if (statusPriority[data.status] < statusPriority[prev.status]) {
+                            return { ...data, status: prev.status };
+                        }
+                        return data;
+                    });
 
                     if (data.status === 'completed' && data.winnerUnlockCode) {
                         setIsSpinning(false);
@@ -294,7 +309,14 @@ function LobbyContent() {
                 const response = await fetch(`/api/game/${gameId}`);
                 if (response.ok) {
                     const data = await response.json();
-                    setGameState(data);
+                    setGameState((prev) => {
+                        if (!prev) return data;
+                        const statusPriority = { 'waiting': 0, 'countdown': 1, 'spinning': 2, 'completed': 3 };
+                        if (statusPriority[data.status] < statusPriority[prev.status]) {
+                            return { ...data, status: prev.status };
+                        }
+                        return data;
+                    });
                 }
             } catch (error) {
                 console.error('Error polling game state:', error);
@@ -345,7 +367,7 @@ function LobbyContent() {
                             <span className="text-gold font-bold">{myUnlockCode}</span>
                         </p>
                     </div>
-                    {(gameState.status === 'waiting' || gameState.status === 'countdown') && (
+                    {(gameState.status === 'waiting' || gameState.status === 'countdown') && !isSpinning && !showWinner && (
                         <button
                             onClick={handleLeaveGame}
                             disabled={leaving}
@@ -370,7 +392,7 @@ function LobbyContent() {
                             </div>
                         )}
 
-                        {gameState.status === 'countdown' && countdown !== null && (
+                        {gameState.status === 'countdown' && !isSpinning && !showWinner && countdown !== null && (
                             <div className="text-center mb-6">
                                 <div
                                     className={`text-7xl font-bold ${countdown <= 5 ? 'text-danger countdown-active' : 'text-gold'
