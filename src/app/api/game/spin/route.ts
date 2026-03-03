@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import dbConnect from '@/lib/db';
 import { GameGroup, Wallet } from '@/lib/models';
 
@@ -79,7 +80,11 @@ export async function POST(request: NextRequest) {
         gameGroup.status = 'completed';
         await gameGroup.save();
 
-        // Credit winner's wallet ONLY if they are not a bot
+        // House User ID for bot winnings and system fees
+        const HOUSE_USER_ID = '69641d951944dec40bbf722a'; // 14eter@gmail.com
+        const HOUSE_EMAIL = '14eter@gmail.com';
+
+        // Credit winner's wallet
         if (!winner.isBot) {
             console.log(`Crediting real winner ${winner.fullName}: ${winnerPayout} GP`);
             await Wallet.findOneAndUpdate(
@@ -99,8 +104,45 @@ export async function POST(request: NextRequest) {
                 }
             );
         } else {
-            console.log(`Bot ${winner.fullName} won. Skipping wallet update.`);
+            console.log(`Bot ${winner.fullName} won. Crediting house wallet: ${winnerPayout} GP`);
+            await Wallet.findOneAndUpdate(
+                { userId: new mongoose.Types.ObjectId(HOUSE_USER_ID) },
+                {
+                    $inc: { balance: winnerPayout },
+                    $push: {
+                        transactions: {
+                            type: 'game_win',
+                            amount: winnerPayout,
+                            reference: `BOT_WIN_${gameGroup._id}`,
+                            description: `Bot ${winner.fullName} won in ${(gameGroup.tier).toLocaleString()} GP game! Funds credited to board.`,
+                            status: 'completed',
+                            createdAt: new Date(),
+                        },
+                    },
+                },
+                { upsert: true }
+            );
         }
+
+        // Also credit system fee to house wallet
+        console.log(`Crediting system fee to house wallet: ${systemFee} GP`);
+        await Wallet.findOneAndUpdate(
+            { userId: new mongoose.Types.ObjectId(HOUSE_USER_ID) },
+            {
+                $inc: { balance: systemFee },
+                $push: {
+                    transactions: {
+                        type: 'game_win', // Using game_win for fee collection as well, or we could add 'fee_collection' type
+                        amount: systemFee,
+                        reference: `FEE_${gameGroup._id}`,
+                        description: `System fee (20%) from ${(gameGroup.tier).toLocaleString()} GP game!`,
+                        status: 'completed',
+                        createdAt: new Date(),
+                    },
+                },
+            },
+            { upsert: true }
+        );
 
         return NextResponse.json({
             success: true,
