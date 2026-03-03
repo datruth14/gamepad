@@ -101,7 +101,13 @@ export async function initializeDeposit(
         }),
     });
 
-    return response.json();
+    const data = await response.json();
+    console.log('Paystack response status:', response.status);
+    if (!response.ok) {
+        console.error('Paystack initialization error body:', JSON.stringify(data, null, 2));
+    }
+
+    return data;
 }
 
 export async function verifyTransaction(reference: string): Promise<PaystackVerifyResponse> {

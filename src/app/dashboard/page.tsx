@@ -16,6 +16,14 @@ interface LobbyData {
     gameId: string | null;
 }
 
+interface ActiveGame {
+    active: boolean;
+    gameId?: string;
+    tier?: number;
+    unlockCode?: string;
+    status?: string;
+}
+
 const TIERS = [
     { tier: 1000, label: '1K', color: 'from-emerald-500 to-emerald-700' },
     { tier: 2000, label: '2K', color: 'from-blue-500 to-blue-700' },
@@ -30,6 +38,7 @@ export default function DashboardPage() {
     const router = useRouter();
     const [wallet, setWallet] = useState<WalletData | null>(null);
     const [lobbies, setLobbies] = useState<LobbyData[]>([]);
+    const [activeGame, setActiveGame] = useState<ActiveGame | null>(null);
     const [loading, setLoading] = useState(true);
     const [joining, setJoining] = useState<number | null>(null);
 
@@ -42,9 +51,10 @@ export default function DashboardPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [walletRes, lobbiesRes] = await Promise.all([
+                const [walletRes, lobbiesRes, activeRes] = await Promise.all([
                     fetch('/api/wallet'),
                     fetch('/api/game/lobbies'),
+                    fetch('/api/game/active'),
                 ]);
 
                 if (walletRes.ok) {
@@ -55,6 +65,11 @@ export default function DashboardPage() {
                 if (lobbiesRes.ok) {
                     const lobbiesData = await lobbiesRes.json();
                     setLobbies(lobbiesData.groups || []);
+                }
+
+                if (activeRes.ok) {
+                    const activeData = await activeRes.json();
+                    setActiveGame(activeData);
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -72,6 +87,12 @@ export default function DashboardPage() {
     }, [session]);
 
     const handleJoinGame = async (tier: number) => {
+        // If user already has an active game, redirect to it instead of joining a new one
+        if (activeGame && activeGame.active) {
+            router.push(`/lobby/${activeGame.tier}?gameId=${activeGame.gameId}&code=${activeGame.unlockCode}`);
+            return;
+        }
+
         if (wallet && wallet.balance < tier) {
             alert(`Insufficient balance. You need ${tier.toLocaleString()} GP to join this game.`);
             return;
@@ -89,6 +110,17 @@ export default function DashboardPage() {
             const data = await response.json();
 
             if (!response.ok) {
+                // If the error says they are already in a game, try to get active game again
+                if (data.error?.includes('already in an active game')) {
+                    const activeRes = await fetch('/api/game/active');
+                    if (activeRes.ok) {
+                        const activeData = await activeRes.json();
+                        if (activeData.active) {
+                            router.push(`/lobby/${activeData.tier}?gameId=${activeData.gameId}&code=${activeData.unlockCode}`);
+                            return;
+                        }
+                    }
+                }
                 throw new Error(data.error || 'Failed to join game');
             }
 
@@ -133,6 +165,27 @@ export default function DashboardPage() {
                     </Link>
                 </div>
             </div>
+
+            {/* Active Game Banner */}
+            {activeGame && activeGame.active && (
+                <div className="bg-gold/10 border-2 border-gold/30 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 gold-glow">
+                    <div className="flex items-center space-x-4">
+                        <div className="text-4xl animate-pulse">🎰</div>
+                        <div>
+                            <h3 className="text-xl font-bold text-gold">Action in Progress!</h3>
+                            <p className="text-primary-300">
+                                You have an active {activeGame.tier?.toLocaleString()} GP game session.
+                            </p>
+                        </div>
+                    </div>
+                    <Link
+                        href={`/lobby/${activeGame.tier}?gameId=${activeGame.gameId}&code=${activeGame.unlockCode}`}
+                        className="btn btn-primary whitespace-nowrap"
+                    >
+                        Return to Game
+                    </Link>
+                </div>
+            )}
 
             {/* Game Tiers Grid */}
             <div>
